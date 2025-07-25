@@ -57,6 +57,22 @@ def get_tips():
     }
     return jsonify(data)
 
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message = request.form.get('message')
+
+        # You can implement email sending or DB storage here
+        print(f"Contact Form Submitted: Name={name}, Email={email}, Message={message}")
+        
+        flash("Your message has been sent successfully!", "success")
+        return redirect(url_for('contact'))
+
+    return render_template('contact.html')
+
+
 # --------------------------
 # Business Planning Page
 # --------------------------
