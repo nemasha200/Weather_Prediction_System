@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <style>
+    body {
+      position: relative;
+      background-image: url('/static/cloud1.jpg'); 
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      background-color: #acccd1;
+      color: #211f1f; 
+    }
+
+    
+
+  </style>
+  <meta charset="UTF-8" />
+  <title>Historical Trends</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 h-full">
+  <nav class="bg-purple-800 text-white p-4 flex justify-between">
+    <h1 class="text-xl font-bold">Historical Weather Trends</h1>
+    <a href="/" class="hover:underline">🏠 Back to Dashboard</a>
+  </nav>
+
+  <main class="p-8 max-w-6xl mx-auto space-y-8">
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded shadow flex flex-col md:flex-row gap-4">
+      <div>
+        <label class="block text-sm font-bold mb-1">Region</label>
+        <select id="region" class="border rounded p-2 w-full">
+          <option value="Colombo">Colombo</option>
+          <option value="Kandy">Kandy</option>
+          <option value="Galle">Galle</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1">Start Year</label>
+        <input type="number" id="startYear" class="border rounded p-2 w-full" value="2020">
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1">End Year</label>
+        <input type="number" id="endYear" class="border rounded p-2 w-full" value="2025">
+      </div>
+      <button id="applyFilters" class="bg-purple-800 text-white px-4 py-2 rounded shadow hover:bg-purple-900 self-end">Apply</button>
+    </div>
+
+    <!-- Temperature Chart -->
+    <div>
+      <h2 class="text-xl font-bold mb-2">Temperature Trends</h2>
+      <canvas id="temperatureChart" height="100"></canvas>
+    </div>
+
+    <!-- Rainfall Chart -->
+    <div>
+      <h2 class="text-xl font-bold mb-2">Rainfall Patterns</h2>
+      <canvas id="rainfallChart" height="100"></canvas>
+    </div>
+
+    <!-- Insights -->
+    <div class="bg-purple-50 p-4 rounded shadow">
+      <h3 class="font-bold mb-2">Insights</h3>
+      <p id="insights">Loading insights...</p>
+    </div>
+
+    <!-- Download Button -->
+    <button id="downloadBtn" class="bg-purple-800 text-white px-4 py-2 rounded shadow hover:bg-purple-900">
+      Download Report (PDF)
+    </button>
+  </main>
+
+  <script src="{{ url_for('static', filename='history.js') }}"></script>
+</body>
+</html>

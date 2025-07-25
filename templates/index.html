@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <title>Weather Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    
+
+    body {
+      position: relative;
+      background-image: url('/static/predict.jpg'); 
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      background-color: #acccd1;
+      color: #000; 
+    }
+
+    /* Overlay to reduce contrast */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(215, 209, 209, 0.4); 
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .nav-special {
+      color: #fbf4f4;
+    }
+    .nav-special:visited {
+      color: #f0ebeb;
+    }
+    .weather-box {
+      background-color: #18736847;
+      color: rgb(51, 47, 47);
+    }
+    
+  .text-gray-800 {
+    color: #000 !important;
+  }
+
+
+  /* Use same background as .weather-box for green boxes */
+  .bg-green-50 {
+    background-color: #14151529 !important;
+  }
+
+
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+  <!-- Navigation -->
+  <nav style="background-color: #168080;" class="text-white p-4 flex flex-col md:flex-row md:justify-between md:items-center">
+    <h1 class="text-xl font-bold mb-2 md:mb-0">Weather Prediction for Agriculture and Local Businesses</h1>
+    <div class="space-x-4">
+      <a href="/about" class="nav-special hover:underline">About</a>
+      <a href="/contact" class="nav-special hover:underline">Contact</a>
+      <a href="/historical-trends" class="nav-special hover:underline">Historical Trends</a>
+      <a href="/agriculture-tips" class="nav-special hover:underline">Agriculture Tips</a>
+      <a href="/business-planning" class="nav-special hover:underline">Business Planning</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="p-8 space-y-8 flex-grow">
+    <h2 class="text-2xl font-bold">Today's Weather Prediction</h2>
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+      <p id="currentDateTime" class="text-gray-700 mb-4"></p>
+      <button id="addToCalendarBtn" class="mt-2 md:mt-0 bg-transparent text-black border border-black px-4 py-2 rounded hover:bg-gray-200">
+        📅 Add Today's Forecast to Calendar
+      </button>
+    </div>
+
+    <!-- Weather Boxes -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="weather-box shadow rounded p-4 flex items-center space-x-4">
+        <span class="text-4xl">🌡️</span>
+        <div>
+          <p class="text-gray-800">Temperature</p>
+          <p id="temperature" class="text-xl font-bold text-black">-- °C</p>
+        </div>
+      </div>
+      <div class="weather-box shadow rounded p-4 flex items-center space-x-4">
+        <span class="text-4xl">🌧️</span>
+        <div>
+          <p class="text-gray-800">Rainfall</p>
+          <p id="rainfall" class="text-xl font-bold text-black">-- mm</p>
+        </div>
+      </div>
+      <div class="weather-box shadow rounded p-4 flex items-center space-x-4">
+        <span class="text-4xl">💧</span>
+        <div>
+          <p class="text-gray-800">Humidity</p>
+          <p id="humidity" class="text-xl font-bold text-black">-- %</p>
+        </div>
+      </div>
+      <div class="weather-box shadow rounded p-4 flex items-center space-x-4">
+        <span class="text-4xl">🌬️</span>
+        <div>
+          <p class="text-gray-800">Wind Speed</p>
+          <p id="wind_speed" class="text-xl font-bold text-black">-- km/h</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold">Next 7 Days Forecast</h2>
+    <canvas id="forecastChart" height="100"></canvas>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+      <div class="bg-green-50 p-4 rounded shadow">
+        <h3 class="font-bold mb-2">Recommendations for Farmers</h3>
+        <p>Next 3 days heavy rain: delay irrigation to prevent waterlogging</p>
+      </div>
+
+      <div class="bg-green-50 p-4 rounded shadow">
+        <h3 class="font-bold mb-2">Suggestions for Businesses</h3>
+        <p>Plan stock levels and deliveries considering upcoming weather conditions.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-green-50 p-4 rounded shadow">
+        <h3 class="font-bold mb-2 text-green-800">Farmer-Specific Alerts</h3>
+        <ul class="list-disc ml-5 space-y-2">
+          <li id="crop_alert">🌱 Crop-specific alert: Rain expected tomorrow. Delay watering.</li>
+          <li id="soil_moisture">🌾 Soil Moisture Index: -- %</li>
+          <li id="fertilizer_tip">🧪 Fertilizer/Pesticide Tip: High humidity, reduce pesticide spraying.</li>
+        </ul>
+      </div>
+
+      <div class="bg-green-50 p-4 rounded shadow">
+        <h3 class="font-bold mb-2 text-green-800">Business Owner Suggestions</h3>
+        <ul class="list-disc ml-5 space-y-2">
+          <li id="logistics_planner">🚚 Logistics Planner: Low rainfall, good for outdoor delivery.</li>
+          <li id="inventory_warning">📦 Inventory Warning: High humidity may affect storage.</li>
+          <li id="staff_scheduling">👥 Staff Scheduling: Extra staff may be needed during rain.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="background-color: #168080;" class="text-white">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-center items-center">
+      <p class="text-sm">&copy; 2025 Weather Dashboard for Agriculture and Local Businesses</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const now = new Date();
+      const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      const formattedDateTime = now.toLocaleDateString('en-US', options);
+      document.getElementById("currentDateTime").textContent = `Date & Time: ${formattedDateTime}`;
+
+      fetch('/api/weather')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('temperature').textContent = `${data.temperature} °C`;
+          document.getElementById('rainfall').textContent = `${data.rainfall} mm`;
+          document.getElementById('humidity').textContent = `${data.humidity} %`;
+          document.getElementById('wind_speed').textContent = `${data.wind_speed} km/h`;
+
+          const ctx = document.getElementById('forecastChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.forecast.days,
+              datasets: [
+                {
+                  label: 'Temperature (°C)',
+                  data: data.forecast.temperature,
+                  borderColor: 'rgb(37, 99, 235)',
+                  fill: false,
+                  tension: 0.4
+                },
+                {
+                  label: 'Rainfall (mm)',
+                  data: data.forecast.rainfall,
+                  borderColor: 'rgb(16, 185, 129)',
+                  borderDash: [5, 5],
+                  fill: false,
+                  tension: 0.4
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: '#606664'
+                  }
+                },
+                x: {
+                  grid: {
+                    color: '#606664'
+                  }
+                }
+              }
+            }
+          });
+        })
+        .catch(error => console.error('Error fetching weather data:', error));
+
+      const addToCalendarBtn = document.getElementById("addToCalendarBtn");
+      if (addToCalendarBtn) {
+        addToCalendarBtn.addEventListener("click", function() {
+          const eventTitle = encodeURIComponent("Today's Weather Forecast");
+          const eventDetails = encodeURIComponent("Check today's weather prediction for agriculture and business planning on the Weather Dashboard.");
+          const location = encodeURIComponent("Colombo, Sri Lanka");
+
+          const startDate = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+          const endDateObj = new Date(now.getTime() + 60 * 60 * 1000);
+          const endDate = endDateObj.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+          const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${eventDetails}&location=${location}&sf=true&output=xml`;
+          window.open(calendarUrl, '_blank');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
