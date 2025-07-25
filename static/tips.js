@@ -16,7 +16,7 @@ fetch('/api/tips')
       recList.appendChild(li);
     });
 
-    // Chart #01081463
+    // Chart 
     const ctx = document.getElementById('forecastChart').getContext('2d');
     new Chart(ctx, {
       type: 'line',
